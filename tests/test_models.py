@@ -1,6 +1,5 @@
 """Tests for hexword Pydantic models."""
 
-import pytest
 from pydantic import ValidationError
 
 from hexword.models import (
@@ -76,10 +75,11 @@ class TestGrid:
         assert g.rows[0] == "FRENCHBED|DOS"
         assert g.columns[0] == "FLABBY|GROUND"
 
-    def test_grid_rejects_unknown_fields(self):
-        """Grid should reject unknown fields (strict)."""
-        with pytest.raises(ValidationError):
-            Grid(rows=[], bogus_field="nope")
+    def test_ignores_unknown_fields(self):
+        """Grid should ignore unknown fields (Issue #12)."""
+        g = Grid(rows=[], bogus_field="nope")
+        assert g.rows == []
+        assert not hasattr(g, "bogus_field")
 
 
 class TestGridStyle:
@@ -108,13 +108,15 @@ class TestGridStyle:
 
     def test_shape_rejects_invalid(self):
         """GridStyle rejects unknown shape values."""
+        import pytest
         with pytest.raises(ValidationError):
             GridStyle(shape="triangle")
 
-    def test_rejects_unknown_fields(self):
-        """GridStyle should reject unknown fields (strict)."""
-        with pytest.raises(ValidationError):
-            GridStyle(background_color="grey", opacity=0.5)
+    def test_ignores_unknown_fields(self):
+        """GridStyle should ignore unknown fields (Issue #12)."""
+        gs = GridStyle.model_validate({"background-color": "grey", "value": "Au"})
+        assert gs.background_color == "grey"
+        assert not hasattr(gs, "value")
 
     def test_all_observed_production_styles(self):
         """All observed production style dicts should parse successfully."""
@@ -154,6 +156,11 @@ class TestClueGroupSettings:
         s = ClueGroupSettings(show_enumerations="entries")
         assert s.show_enumerations == "entries"
 
+    def test_ignores_unknown_fields(self):
+        """ClueGroupSettings should ignore unknown fields."""
+        s = ClueGroupSettings(extra="stuff")
+        assert not hasattr(s, "extra")
+
 
 class TestClue:
     """Clue model tests."""
@@ -192,10 +199,11 @@ class TestClue:
         c = Clue(name="1", clue_text="Test", starred=True)
         assert c.starred is True
 
-    def test_clue_rejects_unknown_fields(self):
-        """Clue should reject unknown fields (strict)."""
-        with pytest.raises(ValidationError):
-            Clue(name="1", clue_text="Test", bogus="nope")
+    def test_ignores_unknown_fields(self):
+        """Clue should ignore unknown fields (Issue #12)."""
+        c = Clue(name="1", clue_text="Test", bogus="nope")
+        assert c.name == "1"
+        assert not hasattr(c, "bogus")
 
 
 class TestClueGroup:
@@ -237,6 +245,11 @@ class TestClueGroup:
             group = ClueGroup(name=name)
             assert group.name == name
 
+    def test_ignores_unknown_fields(self):
+        """ClueGroup should ignore unknown fields."""
+        g = ClueGroup(name="Test", extra="stuff")
+        assert not hasattr(g, "extra")
+
 
 class TestPuzzleSettings:
     """PuzzleSettings model tests."""
@@ -254,3 +267,8 @@ class TestPuzzleSettings:
         """Status 'published' should be accepted."""
         s = PuzzleSettings(status="published")
         assert s.status == "published"
+
+    def test_ignores_unknown_fields(self):
+        """PuzzleSettings should ignore unknown fields."""
+        s = PuzzleSettings(extra="stuff")
+        assert not hasattr(s, "extra")

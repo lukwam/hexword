@@ -41,7 +41,7 @@ class GridStyle(BaseModel):
     )
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="ignore",
         populate_by_name=True,
     )
 
@@ -87,7 +87,7 @@ class Grid(BaseModel):
         description="Map of style marker characters to their visual properties.",
     )
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class ClueGroupSettings(BaseModel):
@@ -114,7 +114,7 @@ class ClueGroupSettings(BaseModel):
         description="Whether to number the starting cell in the grid.",
     )
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class Clue(BaseModel):
@@ -162,7 +162,7 @@ class Clue(BaseModel):
         description="Whether this is a starred/thematic clue.",
     )
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class ClueGroup(BaseModel):
@@ -188,7 +188,7 @@ class ClueGroup(BaseModel):
         description="Display settings for this clue group.",
     )
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class PuzzleSettings(BaseModel):
@@ -231,7 +231,7 @@ class PuzzleSettings(BaseModel):
         description="Whether starred clue entries are highlighted in the grid.",
     )
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class Hexword(BaseModel):
