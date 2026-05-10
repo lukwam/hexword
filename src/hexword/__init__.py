@@ -9,6 +9,7 @@ from hexword.models import (
     Hexword,
     PuzzleSettings,
 )
+from hexword.renderer import HexwordRenderer, render_svg
 from hexword.service import HexwordService
 
 __all__ = [
@@ -18,6 +19,8 @@ __all__ = [
     "Grid",
     "GridStyle",
     "Hexword",
+    "HexwordRenderer",
     "HexwordService",
     "PuzzleSettings",
+    "render_svg",
 ]

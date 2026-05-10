@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from hexword.exceptions import ClueParseError
 from hexword.models import Clue, ClueGroupSettings, Hexword
+from hexword.renderer import render_svg
 
 
 class HexwordService:
@@ -33,6 +34,12 @@ class HexwordService:
             by_alias=True,
             exclude_none=True,
         )
+
+    # --- Rendering ---
+
+    def render_svg(self, hexword: Hexword, show_solution: bool = False, size: int = 50) -> str:
+        """Render a Hexword to an SVG string."""
+        return render_svg(hexword, show_solution=show_solution, size=size)
 
     # --- Text format import/export (tilde-delimited clue strings) ---
 
