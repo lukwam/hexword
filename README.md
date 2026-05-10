@@ -1,41 +1,147 @@
-# cryptic
+# hexword
 
-A Python library for working with cryptic crossword puzzles — parsing, modeling, rendering (SVG), and storing puzzle data.
+A data format library for cryptic crossword puzzles.
 
-## Background
+Pure Pydantic models for representing cryptic crossword grids, clues, and
+settings — with no framework, database, or application dependencies.
 
-This library evolved through several iterations:
+## Installation
 
-1. **`variety` repo (prototype)** — The original workspace (`lukwam/variety`) for developing cryptic crossword tools. It contained an early prototype using the `crossword` PyPI package as a base class, along with a `puzzle/` sub-package that was a more complete standalone implementation.
+```bash
+# From PyPI (coming soon)
+pip install hexword
 
-2. **`hex` repo (embedded)** — The puzzle modeling code was pulled into the [Hex](https://github.com/lukwam/hex) web application (a CoxRathvon cryptic crossword archive app), where it gained Firestore integration, Pydantic data models, richer SVG rendering, and a text parser.
+# From GitHub
+pip install git+https://github.com/lukwam/cryptic.git
+```
 
-3. **`cryptic` repo (current — this repo)** — Extracted from `hex` as a standalone library. This is the **canonical home** for all cryptic crossword library development going forward.
+## Quick Start
 
-The `variety` repo is considered **superseded** by this repo.
+```python
+from hexword import Hexword, HexwordService
 
-## Current State
+service = HexwordService()
 
-This repo contains the code as extracted from the `hex` repo. It is functional but tightly coupled to the Hex app's data layer (Firestore, Flask forms). The plan is to **rewrite the library** with a clean API that can be used independently or integrated into applications like Hex.
+# Parse a puzzle from a dict (e.g., from Firestore, YAML, or JSON)
+data = {
+    "title": "Shady Doings",
+    "author": "Emily Cox & Henry Rathvon",
+    "clue_groups": [
+        {
+            "name": "Across",
+            "clues": [
+                {
+                    "name": "1",
+                    "clue_text": "Sort of lily branch holding up halfway",
+                    "answers": ["ARUM"],
+                    "annotations": ["AR(U)M"],
+                },
+            ],
+        },
+    ],
+    "grid": {
+        "rows": ["ARUM|FIREANTS"],
+        "columns": ["APISH|AEROBIC"],
+    },
+}
 
-### Modules
+puzzle = service.from_dict(data)
 
-| Module | Description |
-|---|---|
-| `puzzle.py` | Core `Puzzle` class — metadata, grid, clues, SVG export, Firestore serialization |
-| `grid.py` | `Grid` class — row/column/style parsing, cell matrix construction, entry detection |
-| `cell.py` | `Cell` class — value parsing, bar detection, style resolution, conflict checking |
-| `clues.py` | `Clue`, `ClueGroup`, `ClueGroups` — clue parsing, enumeration, Firestore round-tripping |
-| `svg.py` | `SVG` class — full puzzle rendering (bars, borders, circles, shading, numbers) |
-| `schema.py` | Pydantic models for the Hex API (Book, Puzzle, Hexgrid, Grid, User, etc.) |
-| `parser.py` | Text format parser — converts plain text puzzle descriptions into Puzzle objects |
-| `verify.py` | Quick verification script (needs cleanup) |
+# Access structured data
+print(puzzle.title)                          # "Shady Doings"
+print(puzzle.clue_groups[0].clues[0].name)   # "1"
+print(puzzle.grid.rows[0])                   # "ARUM|FIREANTS"
 
-## Related Projects
+# Serialize back to a dict (Firestore-compatible)
+d = service.to_dict(puzzle)
+```
 
-- **[hex](https://github.com/lukwam/hex)** — CoxRathvon cryptic crossword archive web app (consumer of this library)
-- **[variety](https://github.com/lukwam/variety)** — Original prototype workspace (superseded by this repo)
+## Text Format
+
+The library supports import/export of clues in a tilde-delimited text
+format, useful for YAML files and human-readable representations:
+
+```python
+from hexword import HexwordService
+
+service = HexwordService()
+
+# Parse a tilde-delimited clue string
+clue = service.parse_clue("1. Sort of lily branch ~ ARUM ~ AR(U)M")
+print(clue.name)       # "1"
+print(clue.answers)    # ["ARUM"]
+
+# Serialize back to text
+text = service.clue_to_string(clue)
+print(text)            # "1. Sort of lily branch ~ ARUM ~ AR(U)M"
+
+# Compute enumerations
+print(HexwordService.get_enumeration("AIR GUN"))   # "3,3"
+print(HexwordService.get_enumeration("SELF-MADE"))  # "4-4"
+```
+
+## Models
+
+| Model | Purpose |
+| --- | --- |
+| `Hexword` | Top-level puzzle content: title, author, clues, grid, settings |
+| `Grid` | Grid structure: rows, columns, style masks, visual style definitions |
+| `GridStyle` | Visual properties for a style marker (color, shape, fill, stroke) |
+| `ClueGroup` | Named group of clues (Across, Down, or creative variant names) |
+| `ClueGroupSettings` | Per-group display settings (enumerations, grid entries, labels) |
+| `Clue` | Structured clue: label, clue text, answers, entries, annotations |
+| `PuzzleSettings` | Puzzle-level display settings (columns, borders, bars, lines) |
+
+## Architecture
+
+```text
+hexword/
+├── __init__.py       # Public API with lazy imports
+├── models.py         # Pydantic models (data only, no I/O)
+├── service.py        # Business logic (serialization, parsing)
+└── exceptions.py     # Domain exceptions
+```
+
+Following the models/services pattern:
+
+- **Models** are data-only — validation is OK, no I/O or business logic
+- **Service** handles all transformation: dict serialization, text format
+  parsing, enumeration computation
+
+## Cross-Format Support
+
+The hexword format maps cleanly to standard crossword interchange formats:
+
+| Field | hexword | iPuz | JPZ/XML | XD |
+| --- | --- | --- | --- | --- |
+| Title | `title` | `title` | `<title>` | `Title:` |
+| Author | `author` | `author` | `<author>` | `Author:` |
+| Editor | `editor` | `editor` | `<editor>` | `Editor:` |
+| Instructions | `instructions` | `intro` | `<description>` | — |
+| Solution | `solution` | `explanation` | — | — |
+
+## Development
+
+```bash
+# Install dependencies
+poetry install
+
+# Run tests
+poetry run pytest -v
+
+# Lint
+poetry run ruff check src/ tests/
+```
 
 ## License
 
 MIT
+
+## Related
+
+- [hex](https://github.com/lukwam/hex) — Management site for the Cox &
+  Rathvon puzzle archive (consumer of this library)
+- [hexgrids](https://github.com/lukwam/hexgrids) — Interactive grid editor
+  for cryptic crosswords
+- [iPuz](http://ipuz.org) — Open puzzle interchange format
+- [XD Format](https://github.com/century-arcade/xd) — Text-based crossword format

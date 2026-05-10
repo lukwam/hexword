@@ -1,0 +1,235 @@
+# Snow White — A test puzzle for the hexword library.
+#
+# Originally 'basic.yaml' from the variety repo.
+# Converted to the hexword structured format with Clue objects.
+# 12×12 barred cryptic with 9 unclued entries (Snow White's dwarfs + SNOW + WHITE).
+
+title: Hello World!
+author: Tweedle Dee and Tweedle Dum
+editor: Barney McFly
+instructions: |
+  These are a bunch of words that make up the description of the puzzle.
+
+  This description has more than one paragraph. It also has some special
+  characters, such as this fancy apostrophe: ', and these fancy curly
+  quotes: "\u201c\u201d" and this fancy dash: \u2014.
+
+  In addition to all of that, it has some <b>BOLD</b> and <i>ITALIC</i>
+  text, to show off the support for some basic HTML tags.
+
+  Enjoy!
+
+solution: >
+  These are some words to describe the solution to the puzzle.
+
+  You can imagine it having a list of UNCLUED answers, or an
+  explanation of the final answer, or whatever you want.
+
+grid:
+  rows:
+    - FRENCHBED|DOS
+    - LINED|U|E|BROWN
+    - ANCIENT|A|O|P|T|E
+    - B|C|AGATES|WERE
+    - BASHFUL|A|S|Y|A|Z
+    - Y|CESS|P|SLEEPY
+    - GRUMPY|G|TAPS|M
+    - R|E|F|A|A|HOSPICE
+    - OARS|SAUNAS|L|T
+    - U|M|A|K|M|PROCTOR
+    - NONES|P|D|WHITE
+    - DOC|DRYSPELLS
+  columns:
+    - FLABBY|GROUND
+    - R|INCA|CREAM|O|O
+    - ENCASE|U|FRANC
+    - NEIGHS|MASKED
+    - C|DEAF|SPASMS|R
+    - HUNTUP|Y|HAPPY
+    - BETEL|S|GOURDS
+    - E|BASALT|SNOW|P
+    - DROWSE|APACHE
+    - DOPEY|E|PISTIL
+    - O|W|TRAPS|CLOT|L
+    - SNEEZY|METRES
+  style: []
+  styles: {}
+
+clue_groups:
+  - name: Across
+    clues:
+      - name: "1"
+        clue_text: "Europeans plot practical joke"
+        answers: ["FRENCH BED"]
+        annotations: ["FRENCH BED"]
+      - name: "7"
+        clue_text: "Acceptable behavior at parties?"
+        answers: ["DOS"]
+        annotations: ["DOS (double def.)"]
+      - name: "8"
+        clue_text: "Faced with wrinkles"
+        answers: ["LINED"]
+        annotations: ["LINED (double def.)"]
+      - name: "11"
+        clue_text: "Toast and cocoa"
+        answers: ["BROWN"]
+        annotations: ["BROWN (double def.)"]
+      - name: "12"
+        clue_text: "About... about 101 years old"
+        answers: ["ANCIENT"]
+        annotations: ["AN(CI)ENT"]
+      - name: "14"
+        clue_text: "Follow ocean about, returning stones"
+        answers: ["AGATES"]
+        annotations: ["AGATES (se[tag]a rev.)"]
+      - name: "15"
+        clue_text: "Used to be wolf's mate"
+        answers: ["WERE"]
+        annotations: ["WERE (double def.)"]
+      - name: "16"
+        clue_text: "Tax pool of sorts"
+        answers: ["CESS"]
+        annotations: ["CESS (double def.)"]
+      - name: "21"
+        clue_text: "Cocks fight back"
+        answers: ["TAPS"]
+        annotations: ["TAPS (spat rev.)"]
+      - name: "26"
+        clue_text: "A lot of hot pepper will lead to the asylum"
+        answers: ["HOSPICE"]
+        annotations: ["HO-SPICE"]
+      - name: "28"
+        clue_text: "Propellers in uproar, spinning"
+        answers: ["OARS"]
+        annotations: ["OARS (hidden)"]
+      - name: "29"
+        clue_text: "A French interior, with mirrored South American baths"
+        answers: ["SAUNAS"]
+        annotations: ["SA-UN-AS"]
+      - name: "30"
+        clue_text: "Overseer for regressive military program"
+        answers: ["PROCTOR"]
+        annotations: ["PROCTOR (pro + ROTC rev.)"]
+      - name: "31"
+        clue_text: "Nobody's dates"
+        answers: ["NONES"]
+        annotations: ["NONES"]
+      - name: "32"
+        clue_text: "Unproductive charms will make no rain fall"
+        answers: ["DRY SPELLS"]
+        annotations: ["DRY SPELLS"]
+    settings:
+      show_enumerations: ""
+      show_grid_entries: true
+      show_grid_labels: true
+      reverse_grid_entries: false
+
+  - name: Down
+    clues:
+      - name: "1"
+        clue_text: "Bit of flouncing gets baby bent out of shape"
+        answers: ["FLABBY"]
+        annotations: ["FL-ABBY (baby anag.)"]
+      - name: "2"
+        clue_text: "Put in casket, arrange seance"
+        answers: ["ENCASE"]
+        annotations: ["ENCASE (anag.)"]
+      - name: "3"
+        clue_text: "Disquieted pig amidst flapping hens making beastly noises"
+        answers: ["NEIGHS"]
+        annotations: ["NEIGHS (ig inside hens, anag.)"]
+      - name: "4"
+        clue_text: "Attila gets set back in quest"
+        answers: ["HUNT UP"]
+        annotations: ["HUNT UP (hun + put rev.)"]
+      - name: "5"
+        clue_text: "Rocking Beatle to Miss--a sort of nut"
+        answers: ["BETEL"]
+        annotations: ["BETEL (Beatle anag. without a)"]
+      - name: "6"
+        clue_text: "Raise arm to point in sleep"
+        answers: ["DROWSE"]
+        annotations: ["DROWSE (rev. + e)"]
+      - name: "9"
+        clue_text: "Civilization takes little part in reincarnation"
+        answers: ["INCA"]
+        annotations: ["INCA (hidden)"]
+      - name: "10"
+        clue_text: "Parade a fault--obviously senseless"
+        answers: ["DEAF"]
+        annotations: ["DEAF (hidden)"]
+      - name: "11"
+        clue_text: "Rock-bottom, head to toe"
+        answers: ["BASALT"]
+        annotations: ["BASAL-T"]
+      - name: "13"
+        clue_text: "Makes snare drums"
+        answers: ["TRAPS"]
+        annotations: ["TRAPS (double def.)"]
+      - name: "16"
+        clue_text: "Beat the best"
+        answers: ["CREAM"]
+        annotations: ["CREAM (double def.)"]
+      - name: "17"
+        clue_text: "Jerks make crude pass at liberated woman"
+        answers: ["SPASMS"]
+        annotations: ["SPASMS (pass anag. + Ms.)"]
+      - name: "18"
+        clue_text: "Gershwin's first song subject"
+        answers: ["GROUND"]
+        annotations: ["G-ROUND"]
+      - name: "19"
+        clue_text: "Maiden of mystery invited in disguise"
+        answers: ["MASKED"]
+        annotations: ["M-ASKED"]
+      - name: "20"
+        clue_text: "There's nothing in false drugs, but people go crazy when out of them"
+        answers: ["GOURDS"]
+        annotations: ["GOURDS (o in drugs anag.)"]
+      - name: "22"
+        clue_text: "Say! A freckly Indian!"
+        answers: ["APACHE"]
+        annotations: ["APACHE (homophone)"]
+      - name: "23"
+        clue_text: "Burning to drink up what's in a flower"
+        answers: ["PISTIL"]
+        annotations: ["PISTIL (lit-sip rev.)"]
+      - name: "24"
+        clue_text: "Merest changes in rhythms"
+        answers: ["METRES"]
+        annotations: ["METRES (anag.)"]
+      - name: "25"
+        clue_text: "It pays to sound sincere!"
+        answers: ["FRANC"]
+        annotations: ["FRANC (homophone)"]
+      - name: "27"
+        clue_text: "Lump in bedclothes"
+        answers: ["CLOT"]
+        annotations: ["CLOT (hidden)"]
+    settings:
+      show_enumerations: ""
+      show_grid_entries: true
+      show_grid_labels: true
+      reverse_grid_entries: false
+
+settings:
+  status: ""
+  clue_columns: 2
+  show_enumerations: ""
+  show_grid_bars: ""
+  show_grid_border: true
+  show_grid_entries: true
+  show_grid_labels: true
+  show_grid_lines: true
+  show_starred_entries_in_grid: false
+
+unclued:
+  - BASHFUL
+  - SLEEPY
+  - GRUMPY
+  - WHITE
+  - DOC
+  - SNEEZY
+  - DOPEY
+  - HAPPY
+  - SNOW

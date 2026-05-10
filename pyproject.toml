@@ -1,0 +1,32 @@
+[project]
+name = "hexword"
+version = "0.1.0"
+description = "A data format library for cryptic crossword puzzles"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.0"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "hexword", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0"
+pyyaml = "^6.0"
+ruff = "^0.15"
+pyright = "^1.1.409"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
