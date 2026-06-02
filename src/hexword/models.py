@@ -162,6 +162,14 @@ class Clue(BaseModel):
         description="Whether this is a starred/thematic clue.",
     )
 
+    @property
+    def explanations(self) -> list[str]:
+        return self.annotations
+
+    @property
+    def explanation(self) -> str:
+        return self.annotations[0] if self.annotations else ""
+
     model_config = ConfigDict(extra="ignore")
 
 
