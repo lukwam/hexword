@@ -328,14 +328,23 @@ class HexwordRenderer:
                 x = cell.x * self.size + self.BORDER_WIDTH
                 y = cell.y * self.size + self.BORDER_WIDTH
                 
+                style = cell.solution_style if self.show_solution and cell.solution_style else cell.style
+                
                 if cell.is_blank:
-                    continue
+                    if style and style.background_color:
+                        svg_parts.append(f'    <rect x="{x}" y="{y}" width="{self.size}" height="{self.size}" fill="{style.background_color}" '
+                                       f'stroke="black" stroke-width="{self.LINE_WIDTH}px" />')
+                    else:
+                        continue
                 elif cell.is_block:
-                    svg_parts.append(f'    <use xlink:href="#svg-block" x="{x}" y="{y}" />')
+                    if style and style.background_color:
+                        svg_parts.append(f'    <rect x="{x}" y="{y}" width="{self.size}" height="{self.size}" fill="{style.background_color}" '
+                                       f'stroke="black" stroke-width="{self.LINE_WIDTH}px" />')
+                    else:
+                        svg_parts.append(f'    <use xlink:href="#svg-block" x="{x}" y="{y}" />')
                 else:
                     # Squares (Shaded or White)
                     fill = "white"
-                    style = cell.solution_style if self.show_solution and cell.solution_style else cell.style
                     if style and style.background_color:
                         fill = style.background_color
                     
