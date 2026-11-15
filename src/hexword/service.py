@@ -6,9 +6,23 @@ Models are data-only; this service handles transformation.
 
 from __future__ import annotations
 
+import re
+
 from hexword.exceptions import ClueParseError
-from hexword.models import Clue, ClueGroupSettings, Hexword
+from hexword.models import Clue, ClueGroupSettings, Hexword, PuzzleSettings
 from hexword.renderer import render_svg
+
+
+ENUMERATION_STYLES = ("split", "total")
+WORD_NOTES = ("words", "numeral", "abbreviated", "none")
+NUMBER_WORDS = ("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+
+# A word note at the end of clue text, in italics or not: "(two words)", "(2 wds.)", "(hyphenated)", "(hyph.)".
+# Notes are data, derived from the answer (spec §4.1); one left in the clue text should be taken out.
+NOTE_IN_TEXT = re.compile(
+    r"\(\s*(?:<(?:i|em)>\s*)?(?:[A-Za-z0-9]+\s+(?:words|wds\.?)|hyphenated|hyph\.)\s*(?:</(?:i|em)>\s*)?\)\s*$",
+    re.IGNORECASE,
+)
 
 
 class HexwordService:
@@ -209,3 +223,98 @@ class HexwordService:
                 num = 0
         output += f"{num}"
         return output
+
+    @staticmethod
+    def get_total_length(answer: str) -> str:
+        """Return the enumeration printed under enumeration_style 'total': every letter of the answer.
+
+        'BETA RAY'  → '7'
+        'FIVE-STAR' → '8'
+        """
+        return str(sum(1 for char in answer if char.isalnum()))
+
+    @staticmethod
+    def get_word_note(answer: str, form: str = "words") -> str | None:
+        """Return the note printed after a total length (spec §4.1), or None if the answer needs none.
+
+        An answer of more than one word (words are separated by spaces) gets a word count; failing that, one with a
+        hyphen is 'hyphenated'. form chooses the wording:
+            'words'       → 'two words' (numerals past ten), 'hyphenated'
+            'numeral'     → '2 words', 'hyphenated'
+            'abbreviated' → '2 wds.', 'hyph.'
+            'none'        → no note
+        """
+        if form not in WORD_NOTES:
+            form = "words"
+        if form == "none":
+            return None
+        count = len(answer.split())
+        if count > 1:
+            if form == "words" and count < len(NUMBER_WORDS):
+                return f"{NUMBER_WORDS[count]} words"
+            return f"{count} wds." if form == "abbreviated" else f"{count} words"
+        if "-" in answer:
+            return "hyph." if form == "abbreviated" else "hyphenated"
+        return None
+
+    @staticmethod
+    def resolve_enumeration_settings(
+        clue: Clue,
+        group_settings: ClueGroupSettings | None = None,
+        puzzle_settings: PuzzleSettings | None = None,
+    ) -> tuple[str, str, bool]:
+        """Return the (enumeration_style, word_note, word_note_italic) that apply to a clue.
+
+        The clue's own enumeration_style wins, then its group's settings, then the puzzle's; a value that isn't one
+        of the allowed ones is ignored.
+        """
+        puzzle = puzzle_settings or PuzzleSettings()
+        group = group_settings or ClueGroupSettings()
+        style = next(
+            (
+                s
+                for s in (clue.enumeration_style, group.enumeration_style, puzzle.enumeration_style)
+                if s in ENUMERATION_STYLES
+            ),
+            "split",
+        )
+        note = next((n for n in (group.word_note, puzzle.word_note) if n in WORD_NOTES), "words")
+        italic = group.word_note_italic if group.word_note_italic is not None else puzzle.word_note_italic
+        return style, note, bool(italic)
+
+    def get_clue_enumerations(
+        self,
+        clue: Clue,
+        group_settings: ClueGroupSettings | None = None,
+        puzzle_settings: PuzzleSettings | None = None,
+        measure: list[str] | None = None,
+    ) -> list[tuple[str, str | None]]:
+        """Return what prints after a clue, one (enumeration, word_note) pair per answer (spec §4.1).
+
+            split: 'BETA RAY' → ('4,3', None)
+            total: 'BETA RAY' → ('7', 'two words')
+
+        measure gives the words to count, one per answer, when they aren't the answers: the grid entries, for a
+        group whose show_enumerations is 'entries'. Word notes always come from the answers. A clue's own
+        enumeration, when set, replaces the derived one.
+        """
+        style, form, _ = self.resolve_enumeration_settings(clue, group_settings, puzzle_settings)
+        answers = clue.answers
+        words = list(measure) if measure else list(answers)
+        if style == "total":
+            enums = [self.get_total_length(w) for w in words]
+            notes = [self.get_word_note(a, form) for a in answers]
+        else:
+            enums = [self.get_enumeration(w) for w in words]
+            notes = [None for _ in words]
+        if isinstance(clue.enumeration, list):
+            enums = list(clue.enumeration)
+        elif clue.enumeration:
+            enums = [clue.enumeration, *enums[1:]]
+        notes += [None] * (len(enums) - len(notes))
+        return list(zip(enums, notes[: len(enums)], strict=True))
+
+    @staticmethod
+    def note_in_text(clue_text: str) -> bool:
+        """Return whether clue text ends with a word note, such as '(two words)', that belongs in the data."""
+        return bool(NOTE_IN_TEXT.search(clue_text))

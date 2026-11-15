@@ -113,6 +113,31 @@ class ClueGroupSettings(BaseModel):
         default=True,
         description="Whether to number the starting cell in the grid.",
     )
+    enumeration_style: str | None = Field(
+        default=None,
+        description="'split' (4,3) or 'total' (7) (two words); None inherits the puzzle's (spec §4.1).",
+    )
+    word_note: str | None = Field(
+        default=None,
+        description="Note wording under 'total': 'words', 'numeral', 'abbreviated' or 'none'; None inherits.",
+    )
+    word_note_italic: bool | None = Field(
+        default=None,
+        description="Whether word notes print in italics; None inherits the puzzle's.",
+    )
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class CluePosition(BaseModel):
+    """The grid word a clue is pinned to: the word starting at (row, col) in that direction (spec §5.4, rule 3).
+
+    For clues that matching can't link, such as Double Cross's, whose two-letter squares never spell the entry.
+    """
+
+    row: int = Field(description="0-based row of the word's first square.")
+    col: int = Field(description="0-based column of the word's first square.")
+    direction: Literal["across", "down"] = Field(description="'across' or 'down'.")
 
     model_config = ConfigDict(extra="ignore")
 
@@ -160,6 +185,18 @@ class Clue(BaseModel):
     starred: bool = Field(
         default=False,
         description="Whether this is a starred/thematic clue.",
+    )
+    position: CluePosition | None = Field(
+        default=None,
+        description="Pins the clue to the word starting at this square, overriding matching (spec §5.4).",
+    )
+    enumeration: str | list[str] | None = Field(
+        default=None,
+        description="Enumeration as printed, when it isn't the one derived from the answer (spec §4).",
+    )
+    enumeration_style: str | None = Field(
+        default=None,
+        description="Overrides the group's enumeration_style for this clue: 'split' or 'total' (spec §4.1).",
     )
 
     @property
@@ -213,6 +250,19 @@ class PuzzleSettings(BaseModel):
     show_enumerations: str = Field(
         default="",
         description="Global enumeration display: 'answers' or ''.",
+    )
+    enumeration_style: str = Field(
+        default="split",
+        description="'split' prints (4,3); 'total' prints (7) (two words) (spec §4.1).",
+    )
+    word_note: str = Field(
+        default="words",
+        description="Note wording under 'total': 'words' (two words), 'numeral' (2 words), "
+        "'abbreviated' (2 wds., hyph.) or 'none'.",
+    )
+    word_note_italic: bool = Field(
+        default=False,
+        description="Whether word notes print in italics.",
     )
     show_grid_bars: str = Field(
         default="",

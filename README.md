@@ -78,7 +78,17 @@ print(text)            # "1. Sort of lily branch ~ ARUM ~ AR(U)M"
 # Compute enumerations
 print(HexwordService.get_enumeration("AIR GUN"))   # "3,3"
 print(HexwordService.get_enumeration("SELF-MADE"))  # "4-4"
+
+# Enumeration styles (hexword-format SPEC §4.1): "(4,3)" or Hex's "(7) (two words)"
+from hexword import ClueGroupSettings
+total = ClueGroupSettings(enumeration_style="total", word_note="words")
+clue = service.parse_clue("1. Double-cross includes a fission product ~ BETA RAY")
+print(service.get_clue_enumerations(clue))         # [("4,3", None)]
+print(service.get_clue_enumerations(clue, total))  # [("7", "two words")]
 ```
+
+Word notes such as "(two words)" are data worked out from the answer, so they never belong in `clue_text`;
+`HexwordService.note_in_text()` finds one left there.
 
 ## Models
 
@@ -89,7 +99,8 @@ print(HexwordService.get_enumeration("SELF-MADE"))  # "4-4"
 | `GridStyle` | Visual properties for a style marker (color, shape, fill, stroke) |
 | `ClueGroup` | Named group of clues (Across, Down, or creative variant names) |
 | `ClueGroupSettings` | Per-group display settings (enumerations, grid entries, labels) |
-| `Clue` | Structured clue: label, clue text, answers, entries, annotations |
+| `Clue` | Structured clue: label, clue text, answers, entries, annotations, enumeration overrides |
+| `CluePosition` | Pins a clue to the word starting at a square, when matching can't link it (spec §5.4) |
 | `PuzzleSettings` | Puzzle-level display settings (columns, borders, bars, lines) |
 
 ## Architecture
