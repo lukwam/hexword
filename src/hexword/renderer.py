@@ -220,7 +220,23 @@ class HexwordRenderer:
                 # Determine the lookup key (entry if present, else answer)
                 # Note: Answers/entries can be pipe-separated
                 search_words = clue.entries if clue.entries else clue.answers
-                
+
+                # A clue with a position links to the word starting there, whatever its letters (spec §5.4, rule 3)
+                if clue.position is not None:
+                    pinned = next(
+                        (
+                            w
+                            for w in grid_words
+                            if (w.start_y, w.start_x, w.direction)
+                            == (clue.position.row, clue.position.col, clue.position.direction)
+                        ),
+                        None,
+                    )
+                    if pinned is not None and group.settings.show_grid_labels:
+                        label_cell = pinned.cells[min(clue.label_index, len(pinned.cells) - 1)]
+                        label_cell.label = label_cell.label or (clue.label if clue.label else clue.name)
+                    continue
+
                 for search_word in search_words:
                     if search_word in word_lookup:
                         # Find the matching word in the grid

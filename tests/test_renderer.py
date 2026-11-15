@@ -166,3 +166,36 @@ class TestRenderer:
         # Bottom border of cell (0,1) where it meets blank (1,1)
         # x=1, y=0. Bottom edge is at y=54, x from 54 to 104.
         assert 'x1="54" y1="54" x2="104" y2="54"' in svg
+
+
+def test_position_links_a_clue_matching_cannot():
+    """Double Cross: two-letter squares never spell the entry, so the clues are pinned by position (spec §5.4)."""
+    from hexword.models import CluePosition
+
+    puzzle = Hexword(
+        title="Double Cross",
+        grid=Grid(rows=["[BE][TR][AY]", "[AB][CD][EF]"], columns=["[BE][AB]", "[TR][CD]", "[AY][EF]"]),
+        clue_groups=[
+            ClueGroup(
+                name="Across",
+                clues=[
+                    Clue(name="1", clue_text="x", answers=["BETA RAY"], entries=["BETRAY"],
+                         position=CluePosition(row=0, col=0, direction="across")),
+                    Clue(name="4", clue_text="y", answers=["ABCDEF"],
+                         position=CluePosition(row=1, col=0, direction="across")),
+                ],
+            ),
+            ClueGroup(
+                name="Down",
+                clues=[
+                    Clue(name="2", clue_text="z", answers=["TRCD"], label_index=0,
+                         position=CluePosition(row=0, col=1, direction="down")),
+                    Clue(name="9", clue_text="w", answers=["BEAB"],
+                         position=CluePosition(row=0, col=0, direction="down")),  # 1 Across's number stays
+                ],
+            ),
+        ],
+    )
+    renderer = HexwordRenderer(puzzle)
+    labels = {(c.y, c.x): c.label for row in renderer.grid for c in row if c.label}
+    assert labels == {(0, 0): "1", (0, 1): "2", (1, 0): "4"}
