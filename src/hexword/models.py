@@ -115,7 +115,8 @@ class ClueGroupSettings(BaseModel):
     )
     enumeration_style: str | None = Field(
         default=None,
-        description="'split' (4,3) or 'total' (7) (two words); None inherits the puzzle's (spec §4.1).",
+        description="'split' (4,3), 'total' (7) (two words) or 'note' (two words); None inherits the puzzle's "
+        "(spec §4.1).",
     )
     word_note: str | None = Field(
         default=None,
@@ -124,6 +125,10 @@ class ClueGroupSettings(BaseModel):
     word_note_italic: bool | None = Field(
         default=None,
         description="Whether word notes print in italics; None inherits the puzzle's.",
+    )
+    word_note_position: str | None = Field(
+        default=None,
+        description="'after' the length, (7) (two words), or 'before' it, (two words) (7); None inherits.",
     )
 
     model_config = ConfigDict(extra="ignore")
@@ -196,7 +201,7 @@ class Clue(BaseModel):
     )
     enumeration_style: str | None = Field(
         default=None,
-        description="Overrides the group's enumeration_style for this clue: 'split' or 'total' (spec §4.1).",
+        description="Overrides the group's enumeration_style for this clue: 'split', 'total' or 'note' (spec §4.1).",
     )
 
     @property
@@ -253,16 +258,21 @@ class PuzzleSettings(BaseModel):
     )
     enumeration_style: str = Field(
         default="split",
-        description="'split' prints (4,3); 'total' prints (7) (two words) (spec §4.1).",
+        description="'split' prints (4,3); 'total' prints (7) (two words); 'note' prints only (two words), "
+        "for puzzles that withhold lengths (spec §4.1).",
     )
     word_note: str = Field(
         default="words",
-        description="Note wording under 'total': 'words' (two words), 'numeral' (2 words), "
+        description="Note wording under 'total' and 'note': 'words' (two words), 'numeral' (2 words), "
         "'abbreviated' (2 wds., hyph.) or 'none'.",
     )
     word_note_italic: bool = Field(
         default=False,
         description="Whether word notes print in italics.",
+    )
+    word_note_position: str = Field(
+        default="after",
+        description="Whether the note prints 'after' the length, (7) (two words), or 'before' it, (two words) (7).",
     )
     show_grid_bars: str = Field(
         default="",
