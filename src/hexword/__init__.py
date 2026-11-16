@@ -11,12 +11,13 @@ from hexword.models import (
     PuzzleSettings,
 )
 from hexword.renderer import HexwordRenderer, render_svg
-from hexword.service import ENUMERATION_STYLES, NOTE_IN_TEXT, WORD_NOTES, HexwordService
+from hexword.service import ENUMERATION_STYLES, NOTE_IN_TEXT, WORD_NOTE_POSITIONS, WORD_NOTES, HexwordService
 
 __all__ = [
     "ENUMERATION_STYLES",
     "NOTE_IN_TEXT",
     "WORD_NOTES",
+    "WORD_NOTE_POSITIONS",
     "Clue",
     "ClueGroup",
     "ClueGroupSettings",

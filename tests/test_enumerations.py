@@ -143,3 +143,34 @@ def test_round_trip_keeps_the_settings(service):
     assert "word_note" not in data["clue_groups"][0]["settings"]  # None: inherits the puzzle's
     assert data["clue_groups"][0]["clues"][0]["enumeration"] == "7"
     assert service.from_dict(data) == puzzle
+
+
+WITHHELD = ClueGroupSettings(enumeration_style="note", word_note_italic=True)
+
+
+@pytest.mark.parametrize(
+    ("answer", "printed"),
+    [("TEAR GAS", [("", "two words")]), ("ILL-USE", [("", "hyphenated")]), ("TIMBER", [("", None)])],
+)
+def test_note_style_prints_the_note_alone(service, answer, printed):
+    """Fixture 11's Withheld group: lengths withheld, a multi-word answer still gets its note."""
+    clue = Clue(name="a", clue_text="Clue", answers=[answer])
+    assert service.get_clue_enumerations(clue, WITHHELD) == printed
+
+
+def test_note_style_ignores_an_explicit_enumeration(service):
+    clue = Clue(name="a", clue_text="Clue", answers=["TEAR GAS"], enumeration="7")
+    assert service.get_clue_enumerations(clue, WITHHELD) == [("", "two words")]
+
+
+def test_word_note_position(service):
+    """Fixture 11's Note first group: Disguise's (2 words) (3)."""
+    assert service.resolve_word_note_position() == "after"
+    first = ClueGroupSettings(enumeration_style="total", word_note="numeral", word_note_position="before")
+    assert service.resolve_word_note_position(first) == "before"
+    assert (
+        service.resolve_word_note_position(ClueGroupSettings(), PuzzleSettings(word_note_position="before")) == "before"
+    )
+    assert service.resolve_word_note_position(ClueGroupSettings(word_note_position="sideways")) == "after"
+    clue = Clue(name="a", clue_text="Mobile duet moving with a fast pace", answers=["DOUBLE TIME"])
+    assert service.get_clue_enumerations(clue, first) == [("10", "2 words")]

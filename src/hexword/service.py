@@ -13,8 +13,9 @@ from hexword.models import Clue, ClueGroupSettings, Hexword, PuzzleSettings
 from hexword.renderer import render_svg
 
 
-ENUMERATION_STYLES = ("split", "total")
+ENUMERATION_STYLES = ("split", "total", "note")
 WORD_NOTES = ("words", "numeral", "abbreviated", "none")
+WORD_NOTE_POSITIONS = ("after", "before")
 NUMBER_WORDS = ("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
 
 # A word note at the end of clue text, in italics or not: "(two words)", "(2 wds.)", "(hyphenated)", "(hyph.)".
@@ -282,6 +283,18 @@ class HexwordService:
         italic = group.word_note_italic if group.word_note_italic is not None else puzzle.word_note_italic
         return style, note, bool(italic)
 
+    @staticmethod
+    def resolve_word_note_position(
+        group_settings: ClueGroupSettings | None = None,
+        puzzle_settings: PuzzleSettings | None = None,
+    ) -> str:
+        """Return 'after' or 'before': where a clue's word note prints relative to its length (spec §4.1)."""
+        puzzle = puzzle_settings or PuzzleSettings()
+        group = group_settings or ClueGroupSettings()
+        return next(
+            (p for p in (group.word_note_position, puzzle.word_note_position) if p in WORD_NOTE_POSITIONS), "after"
+        )
+
     def get_clue_enumerations(
         self,
         clue: Clue,
@@ -293,10 +306,11 @@ class HexwordService:
 
             split: 'BETA RAY' → ('4,3', None)
             total: 'BETA RAY' → ('7', 'two words')
+            note:  'BETA RAY' → ('', 'two words'): the length is withheld, so nothing prints for it
 
         measure gives the words to count, one per answer, when they aren't the answers: the grid entries, for a
         group whose show_enumerations is 'entries'. Word notes always come from the answers. A clue's own
-        enumeration, when set, replaces the derived one.
+        enumeration, when set, replaces the derived one, except under 'note', which prints no length.
         """
         style, form, _ = self.resolve_enumeration_settings(clue, group_settings, puzzle_settings)
         answers = clue.answers
@@ -307,6 +321,8 @@ class HexwordService:
         else:
             enums = [self.get_enumeration(w) for w in words]
             notes = [None for _ in words]
+        if style == "note":
+            return [("", self.get_word_note(a, form)) for a in answers]
         if isinstance(clue.enumeration, list):
             enums = list(clue.enumeration)
         elif clue.enumeration:

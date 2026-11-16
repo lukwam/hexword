@@ -85,6 +85,8 @@ total = ClueGroupSettings(enumeration_style="total", word_note="words")
 clue = service.parse_clue("1. Double-cross includes a fission product ~ BETA RAY")
 print(service.get_clue_enumerations(clue))         # [("4,3", None)]
 print(service.get_clue_enumerations(clue, total))  # [("7", "two words")]
+withheld = ClueGroupSettings(enumeration_style="note")  # lengths withheld: the note alone
+print(service.get_clue_enumerations(clue, withheld))  # [("", "two words")]
 ```
 
 Word notes such as "(two words)" are data worked out from the answer, so they never belong in `clue_text`;
