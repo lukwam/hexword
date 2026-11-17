@@ -266,8 +266,8 @@ class HexwordService:
     ) -> tuple[str, str, bool]:
         """Return the (enumeration_style, word_note, word_note_italic) that apply to a clue.
 
-        The clue's own enumeration_style wins, then its group's settings, then the puzzle's; a value that isn't one
-        of the allowed ones is ignored.
+        The clue's own enumeration_style and word_note win, then its group's settings, then the puzzle's; a value
+        that isn't one of the allowed ones is ignored.
         """
         puzzle = puzzle_settings or PuzzleSettings()
         group = group_settings or ClueGroupSettings()
@@ -279,7 +279,7 @@ class HexwordService:
             ),
             "split",
         )
-        note = next((n for n in (group.word_note, puzzle.word_note) if n in WORD_NOTES), "words")
+        note = next((n for n in (clue.word_note, group.word_note, puzzle.word_note) if n in WORD_NOTES), "words")
         italic = group.word_note_italic if group.word_note_italic is not None else puzzle.word_note_italic
         return style, note, bool(italic)
 
