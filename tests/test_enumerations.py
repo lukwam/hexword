@@ -174,3 +174,15 @@ def test_word_note_position(service):
     assert service.resolve_word_note_position(ClueGroupSettings(word_note_position="sideways")) == "after"
     clue = Clue(name="a", clue_text="Mobile duet moving with a fast pace", answers=["DOUBLE TIME"])
     assert service.get_clue_enumerations(clue, first) == [("10", "2 words")]
+
+
+def test_a_clues_own_word_note(service):
+    """Fixture 11's GOLD-URN: a hyphen that is part of the trick, so the clue drops its note (spec OQ-15)."""
+    clue = Clue(name="d", clue_text="Precious vessel gets carried back", answers=["GOLD-URN"], word_note="none")
+    assert service.get_clue_enumerations(clue, WITHHELD) == [("", None)]
+    total = ClueGroupSettings(enumeration_style="total")
+    assert service.get_clue_enumerations(clue, total) == [("7", None)]
+    clue = Clue(name="a", clue_text="Clue", answers=["BETA RAY"], word_note="abbreviated")
+    assert service.get_clue_enumerations(clue, total) == [("7", "2 wds.")]
+    clue = Clue(name="a", clue_text="Clue", answers=["BETA RAY"], word_note="sideways")
+    assert service.get_clue_enumerations(clue, total) == [("7", "two words")]

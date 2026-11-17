@@ -203,6 +203,11 @@ class Clue(BaseModel):
         default=None,
         description="Overrides the group's enumeration_style for this clue: 'split', 'total' or 'note' (spec §4.1).",
     )
+    word_note: str | None = Field(
+        default=None,
+        description="Overrides the group's word_note for this clue: 'words', 'numeral', 'abbreviated' or 'none', "
+        "for an answer whose note wasn't printed (spec §4.1).",
+    )
 
     @property
     def explanations(self) -> list[str]:
