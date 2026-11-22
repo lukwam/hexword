@@ -12,7 +12,7 @@ settings — with no framework, database, or application dependencies.
 pip install hexword
 
 # From GitHub
-pip install git+https://github.com/lukwam/cryptic.git
+pip install git+https://github.com/lukwam/hexword.git
 ```
 
 ## Quick Start
